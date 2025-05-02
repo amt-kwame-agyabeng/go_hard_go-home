@@ -1,4 +1,4 @@
-# S3 bucket
+# S3 bucket module
 resource "aws_s3_bucket" "secure_storage" {
     bucket = var.bucket_name  
 }
@@ -6,10 +6,8 @@ resource "aws_s3_bucket" "secure_storage" {
 # S3 bucket versioning and encryption
 resource "aws_s3_bucket_public_access_block" "secure_storage" {
     bucket = aws_s3_bucket.secure_storage.id
-    block_public_acls = true
-    block_public_policy = true
-    ignore_public_acls = true
-    restrict_public_buckets = true
+    block_public_acls = false
+   
   
 }
 
