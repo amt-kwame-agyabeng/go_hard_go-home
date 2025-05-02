@@ -35,7 +35,7 @@ resource "aws_subnet" "app_private_subnet" {
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "${local.name_prefix}-app-private-subnet"
+    Name = "${local.name_prefix}-app-private-subnet-${local.avaliability_zones[count.index]}"
 
   }
 }
@@ -48,7 +48,7 @@ resource "aws_subnet" "db_private_subnet" {
   availability_zone       = local.avaliability_zones[count.index]
   map_public_ip_on_launch = false
   tags = {
-    Name = "${local.name_prefix}-db-private-subnet"
+    Name = "${local.name_prefix}-db-private-subnet-${local.avaliability_zones[count.index]}"
 
   }
 }
