@@ -61,3 +61,24 @@ output "db_private_rt_association" {
     value = module.networking.db_private_rt_association
   
 }
+
+
+output "sg_jump_server_id" {
+    value = module.security.sg_jump_server_id
+}
+
+
+output "sg_alb_id" {
+    value = module.security.sg_alb_id
+  
+}
+
+output "sg_rds_id" {
+    value = module.security.sg_rds_id
+  
+}
+
+output "sg_ecs_id" {
+    value = module.security.sg_ecs_id
+  
+}

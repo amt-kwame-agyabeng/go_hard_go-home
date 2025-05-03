@@ -12,3 +12,13 @@ module "networking" {
     vpc = var.vpc_name
   
 }
+
+module "security" {
+    source = "./modules/03-Security"
+    vpc_id = module.networking.vpc_id
+    owner = var.owner  
+    environment = var.environment
+    region = var.region
+    vpc = var.vpc_name
+  
+}
