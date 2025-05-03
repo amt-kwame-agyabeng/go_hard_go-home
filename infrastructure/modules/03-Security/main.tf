@@ -1,8 +1,24 @@
-# Create security group for Jump Server (no inbound trafic)
+# Create security group for Jump Server 
 resource "aws_security_group" "sg_jump_server" {
     name        = "${local.name_prefix}-sg_jump_server"
-    description = "Secutity group for Jump Server"
+    description = "Security group for Jump Server"
     vpc_id      = var.vpc_id
+
+
+    tags = {
+      Name = "${local.name_prefix}-sg_jump_server"
+  
+      
+    }
+
+    # Allow SSH traffic from my IP
+    ingress {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      cidr_blocks = [local.myip_cidr]
+     
+    }
 
     # default outbound traffic
     egress  {
@@ -19,8 +35,13 @@ resource "aws_security_group" "sg_jump_server" {
 # Create Security Group for ALB
 resource "aws_security_group" "sg_alb" {
     name        = "${local.name_prefix}-sg_alb"
-    description = "Secutity group for ALB"
+    description = "Security group for ALB"
     vpc_id      = var.vpc_id
+
+    tags = {
+      Name = "${local.name_prefix}-sg_alb"
+   
+    }
 
 
     # Allow HTTP traffic from Internet
@@ -37,14 +58,16 @@ resource "aws_security_group" "sg_alb" {
       to_port     = 443
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
+      
     }
     
-    # Allow SSH traffic from Internet
-    ingress  {
+    # Allow SSH traffic from jump server
+    ingress {
       from_port   = 22
       to_port     = 22
       protocol    = "tcp"
-      cidr_blocks = ["0.0.0.0/0"]
+      security_groups = [aws_security_group.sg_jump_server.id]
+  
     }
 
     # default outbound traffic
@@ -61,8 +84,13 @@ resource "aws_security_group" "sg_alb" {
 # Create Security Group for ECS
 resource "aws_security_group" "sg_ecs" {
     name        = "${local.name_prefix}-sg_ecs"
-    description = "Secutity group for ECS"
+    description = "Security group for ECS"
     vpc_id      = var.vpc_id
+
+    tags = {
+      Name = "${local.name_prefix}-sg_ecs"
+ 
+    }
 
 
     # Allow HTTP traffic from ALB
@@ -94,7 +122,7 @@ resource "aws_security_group" "sg_ecs" {
       from_port   = 0
       to_port     = 0
       protocol    = "-1"
-      security_groups = [aws_security_group.sg_alb.id]
+      cidr_blocks = ["0.0.0.0/0"]
     }
 
 }
@@ -102,8 +130,13 @@ resource "aws_security_group" "sg_ecs" {
 # Create Security Group for RDS
 resource "aws_security_group" "sg_rds" {
     name        = "${local.name_prefix}-sg_rds"
-    description = "Secutity group for RDS"
+    description = "Security group for RDS"
     vpc_id      = var.vpc_id
+
+    tags = {
+      Name = "${local.name_prefix}-sg_rds"
+ 
+    }
 
 
     # Allows RDS traffic from ECS (Port depends on the RDS engine)
