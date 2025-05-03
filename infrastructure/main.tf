@@ -20,5 +20,5 @@ module "security" {
     environment = var.environment
     region = var.region
     vpc = var.vpc_name
-  
+ 
 }
