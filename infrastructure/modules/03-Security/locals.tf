@@ -13,10 +13,10 @@ locals {
 
 
 locals {
-  security_group_name = "${local.name_prefix}-${var.vpc}"
+  security_group_name = "${local.name_prefix}"
 }
 
-
+# get my ip address
 locals {
   myip = trimspace(data.http.myip.response_body)
   ip_parts = split(".", local.myip)

@@ -5,19 +5,19 @@ variable "bucket_name" {
  
 }
 variable "vpc_name" {
-    description = "The name of the VPC to pass to the networking module"
+    description = "The name of the VPC"
     type        = string  
     
 }
 
 variable "owner" {
-    description = "The owner of the VPC to pass to the networking module"
+    description = "The owner of the project"
     type        = string
   
 }
 
 variable "environment" {
-    description = "The environment of the VPC to pass to the networking module"
+    description = "The environment of the project"
     type        = string
   
 }
@@ -27,5 +27,6 @@ variable "region" {
     type        = string
   
 }
+
 
 

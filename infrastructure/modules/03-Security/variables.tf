@@ -24,7 +24,7 @@ variable "region" {
 }
 
 variable "vpc_id" {
-    description = "The id of the VPC to pass to the security module"
+    description = "The ID of the VPC to pass to the security module"
     type        = string
   
 }

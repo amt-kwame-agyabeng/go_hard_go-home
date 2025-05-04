@@ -3,8 +3,6 @@ output "vpc_id" {
     value = aws_vpc.vpc.id
 }
 
-
-
 # web_public_subnet_ids
 output "web_public_subnet_ids" {
     value = [for subnet in aws_subnet.web_public_subnet : subnet.id] 

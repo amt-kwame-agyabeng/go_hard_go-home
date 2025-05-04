@@ -6,8 +6,6 @@ output "vpc_id" {
     value = module.networking.vpc_id
 }
 
-
-
 # web_public_subnet_ids
 output "web_public_subnet_ids" {
     value = module.networking.web_public_subnet_ids

@@ -5,6 +5,13 @@ resource "aws_ssm_parameter" "vpc" {
   value = local.vpc_name
 }
 
+# store vpc id
+resource "aws_ssm_parameter" "vpc_id" {
+  name  = "/${var.environment}/vpc/id"
+  type  = "String"
+  value = aws_vpc.vpc.id
+}
+
 # store web subnet ids
 resource "aws_ssm_parameter" "web_subnet_ids" {
   name  = "/${var.environment}/web_subnet_ids"
