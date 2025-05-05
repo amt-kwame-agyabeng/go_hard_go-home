@@ -23,3 +23,11 @@ module "security" {
     vpc = var.vpc_name
  
 }
+
+module "iam" {
+    source = "./modules/04-IAM"
+    owner = var.owner
+    environment = var.environment
+    bucket_name = var.bucket_name
+  
+}
