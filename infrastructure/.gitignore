@@ -2,8 +2,7 @@
 terraform.tfstate
 terraform.tfstate.backup
 .terraform/
-
-
+plan_output
 
 
 
