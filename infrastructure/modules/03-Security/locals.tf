@@ -13,7 +13,14 @@ locals {
 
 
 locals {
-  security_group_name = "${local.name_prefix}"
+  jump_server_sg_name = "${local.name_prefix}-${var.jump_server_sg_name}"
+  alb_sg_name = "${local.name_prefix}-${var.alb_sg_name}"
+  ecs_sg_name = "${local.name_prefix}-${var.ecs_sg_name}"
+  rds_sg_name = "${local.name_prefix}-${var.rds_sg_name}"
+  waf_acl_name = "${local.name_prefix}-${var.waf_acl_name}"
+  waf_metric_name = "${local.name_prefix}-tier3-waf-metric"
+
+  
 }
 
 # get my ip address

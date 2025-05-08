@@ -1,12 +1,13 @@
 # Create a VPC 
 resource "aws_vpc" "vpc" {
-  cidr_block = "10.0.0.0/16"
+  cidr_block = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support = true
 
-  tags = {
-    Name = "${local.name_prefix}-vpc"
-  }
+ tags = merge(local.common_tags, {
+  Name = "${local.vpc_name}"
+
+ })
 
 }
 
@@ -19,9 +20,11 @@ resource "aws_subnet" "web_public_subnet" {
   availability_zone       = local.avaliability_zones[count.index]
   map_public_ip_on_launch = true
 
-  tags = {
-    Name = "${local.name_prefix}-web-public-subnet-${local.avaliability_zones[count.index]}"
-  }
+ tags = merge({
+  Name = "${local.web_subnet_name}-${local.avaliability_zones[count.index]}"
+  Type = "Public"
+ })
+
 
   
 }
@@ -34,10 +37,12 @@ resource "aws_subnet" "app_private_subnet" {
   availability_zone       = local.avaliability_zones[count.index]
   map_public_ip_on_launch = false
 
-  tags = {
-    Name = "${local.name_prefix}-app-private-subnet-${local.avaliability_zones[count.index]}"
+  tags = merge({
+  Name = "${local.app_subnet_name}-${local.avaliability_zones[count.index]}"
+  Type = "Private"
+ })
 
-  }
+  
 }
 
 # Create a db private subnet in the VPC across two availability zones
@@ -47,10 +52,11 @@ resource "aws_subnet" "db_private_subnet" {
   cidr_block              = cidrsubnet(aws_vpc.vpc.cidr_block, 4, count.index + 4)
   availability_zone       = local.avaliability_zones[count.index]
   map_public_ip_on_launch = false
-  tags = {
-    Name = "${local.name_prefix}-db-private-subnet-${local.avaliability_zones[count.index]}"
-
-  }
+  
+  tags = merge({
+  Name = "${local.db_subnet_name}-${local.avaliability_zones[count.index]}"
+  Type = "Private"
+ })
 }
 
 
@@ -58,32 +64,45 @@ resource "aws_subnet" "db_private_subnet" {
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.vpc.id
 
-  tags = {
-    Name = "${local.name_prefix}-igw"
-  }
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${local.igw_name}"
+    }
+
+  )
   
 }
 
 # Create the elastic ip for the nat gateway
 resource "aws_eip" "nat_eip" {
-  count      = 2
+
   depends_on = [aws_internet_gateway.igw]
-  tags = {
-    Name = "${local.name_prefix}-nat-eip-${local.avaliability_zones[count.index]}"
-    
-  }
+
+
+   tags = merge(
+    local.common_tags,
+    {
+      Name = "${local.nat_eip_name}"
+    }
+
+  )
+  
 }
+
+
 
 # Create the nat gateway 
 resource "aws_nat_gateway" "nat_gw" {
-  count         = 2
-  allocation_id = aws_eip.nat_eip[count.index].id
-  subnet_id     = aws_subnet.web_public_subnet[count.index].id
+  allocation_id = aws_eip.nat_eip.id
+  subnet_id     = aws_subnet.web_public_subnet[0].id
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${local.ngw_name}"
+    }
 
-  tags = {
-    Name = "${local.name_prefix}-nat-gw-${local.avaliability_zones[count.index]}"
-    
-  }
+  )
   
 }
 
@@ -95,9 +114,13 @@ resource "aws_route_table" "web_public_rt" {
     gateway_id = aws_internet_gateway.igw.id
   }
 
-  tags = {
-    Name = "${local.name_prefix}-web-public-rt"
-  }
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${local.public_rtb_name}"
+    }
+
+  )
   
 }
 
@@ -107,31 +130,34 @@ resource "aws_route_table" "app_private_rt" {
   vpc_id = aws_vpc.vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat_gw[count.index].id
+    gateway_id = aws_nat_gateway.nat_gw.id
   }
 
-  tags = {
-    Name = "${local.name_prefix}-app-private-rt-${local.avaliability_zones[count.index]}"
-  }
-  
+   tags = merge(
+    local.common_tags,
+    {
+      Name = "${local.private_rtb_name}"
+    }
+
+  )
 }
 
-# Create a route table for the database (private) subnets
-resource "aws_route_table" "db_private_rt" {
-  count = length(local.avaliability_zones)
-  vpc_id = aws_vpc.vpc.id
+# # Create a route table for the database (private) subnets
+# resource "aws_route_table" "db_private_rt" {
+#   count = length(local.avaliability_zones)
+#   vpc_id = aws_vpc.vpc.id
 
-  route  {
-    cidr_block = "0.0.0.0/0"
-    gateway_id = aws_nat_gateway.nat_gw[count.index].id
-}
+#   route  {
+#     cidr_block = "0.0.0.0/0"
+#     gateway_id = aws_nat_gateway.nat_gw[count.index].id
+# }
   
 
-  tags = {
-    Name = "${local.name_prefix}-db-private-rt-${local.avaliability_zones[count.index]}"
-  }
+#   tags = {
+#     Name = "${local.name_prefix}-db-private-rt-${local.avaliability_zones[count.index]}"
+#   }
   
-}
+# }
 
 # Associate the public subnets with the public route table
 resource "aws_route_table_association" "web_public_rt_association" {
@@ -154,7 +180,23 @@ resource "aws_route_table_association" "app_private_rt_association" {
 resource "aws_route_table_association" "db_private_rt_association" {
   count          = 2
   subnet_id      = aws_subnet.db_private_subnet[count.index].id
-  route_table_id = aws_route_table.db_private_rt[count.index].id
+  route_table_id = aws_route_table.app_private_rt[count.index].id
 
 }
 
+# Tag VPC Default Security as "Do not use"
+resource "aws_default_security_group" "default" {
+  vpc_id = aws_vpc.vpc.id
+
+  tags = {
+    Name = "Default SG: Do not use"
+  }
+}
+
+# Tag Default Route Table as "Do not Use"
+resource "aws_ec2_tag" "default_rtb" {
+  resource_id = aws_vpc.vpc.default_route_table_id
+  key = "Name"
+  value = "Default Route Table: Do not use" 
+  
+}
