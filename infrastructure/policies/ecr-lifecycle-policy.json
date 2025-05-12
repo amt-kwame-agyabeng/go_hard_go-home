@@ -1,0 +1,43 @@
+{
+    "rules": [
+        {
+            "rulePriority": 1,
+            "description": "Expire images older than 14 days",
+            "selection": {
+                "tagStatus": "untagged",
+                "countType": "sinceImagePushed",
+                "countUnit": "days",
+                "countNumber": 14
+            },
+            "action": {
+                "type": "expire"
+            }
+        },
+        {
+            "rulePriority": 2,
+            "description": "Keep only the 10 most recent tagged images",
+            "selection": {
+                "tagStatus": "tagged",
+                "tagPrefixList": ["v", "release", "latest"],
+                "countType": "imageCountMoreThan",
+                "countNumber": 10
+            },
+            "action": {
+                "type": "expire"
+            }
+        },
+        {
+            "rulePriority": 3,
+            "description": "Remove images with vulnerabilities after 7 days",
+            "selection": {
+                "tagStatus": "any",
+                "countType": "sinceImagePushed",
+                "countUnit": "days",
+                "countNumber": 7
+            },
+            "action": {
+                "type": "expire"
+            }
+        }
+    ]
+}
