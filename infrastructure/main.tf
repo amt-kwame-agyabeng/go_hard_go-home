@@ -1,14 +1,21 @@
-module "s3_storage" {
+module "logging_bucket" {
   source      = "./modules/01-Storage"
   bucket_name = var.bucket_name
+  owner = var.owner
+  environment = var.environment
+  region = var.region 
 
 }
 
 module "iam" {
-  source      = "./modules/04-IAM"
-  owner       = var.owner
-  environment = var.environment
-  bucket_name = var.bucket_name
+  source                    = "./modules/04-IAM"
+  owner                     = var.owner
+  environment               = var.environment
+  region                    = var.region
+  ecs_task_policy_arns      = var.ecs_task_policy_arns
+  ssm_policy_arns           = var.ssm_policy_arns
+  ecs_execution_policy_arns = var.ecs_execution_policy_arns
+  s3_policy_arns            = var.s3_policy_arns
 
 }
 
@@ -29,6 +36,8 @@ module "networking" {
   app_subnet_name  = var.app_subnet_name
   db_subnet_name   = var.db_subnet_name
 
+  depends_on = [module.iam, module.s3_storage]
+
 
 }
 
@@ -48,6 +57,8 @@ module "security" {
   https_port          = var.https_port
   mysql_port          = var.mysql_port
   waf_acl_name        = var.waf_acl_name
+
+  depends_on = [module.networking, module.iam]
 
 
 }
