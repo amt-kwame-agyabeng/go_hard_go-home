@@ -5,3 +5,20 @@ variable "bucket_name" {
  
 }
 
+variable "owner" {
+  description = "The owner of the resources"
+  type        = string
+  
+}
+
+variable "environment" {
+  description = "The environment of the project"
+  type        = string
+  
+}
+
+variable "region" {
+  description = "The region of your VPC"
+  type        = string
+  
+}
