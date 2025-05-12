@@ -11,8 +11,10 @@ locals {
 }
 
 locals {
-    s3_logging_access_name = "${local.name_prefix}-s3-logging-access"
-    s3_logging_access_policy_name = "${local.name_prefix}-s3-logging-access-policy"
-    
- 
+    ssm_role_name = "${local.name_prefix}-tier3-ssm-role"
+    ssm_profile_name = "${local.name_prefix}-tier3-ssm-profile"
+    ecs_task_role_name = "${local.name_prefix}-tier3-ecs-task-role"
+    ecs_execution_role_name = "${local.name_prefix}-tier3-ecs-execution-role"
+    ecs_task_execution_role_name = "${local.name_prefix}-tier3-ecs-task-execution-role"
+    s3_role_name = "${local.name_prefix}-tier3-s3-role"
 }

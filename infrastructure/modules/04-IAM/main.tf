@@ -1,137 +1,76 @@
- # IAM ROLE TO ALLOW S3 PUT AND GET ACCESS TO S3 FOR LOGGING
-resource "aws_iam_role" "s3_logging_access_role" {
-  name = local.s3_logging_access_name
-  
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "ecs-tasks.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-resource "aws_iam_policy" "s3_logging_policy" {
-  name = local.s3_logging_access_policy_name
-  
-  policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [
-      {
-        Action = [
-          "s3:PutObject",
-          "s3:GetObject"
-        ]
-        Effect   = "Allow"
-        Resource = "arn:aws:s3:::${var.bucket_name}/*"
-      },
-    ]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "s3_logging_policy_attachment" {
-  role       = aws_iam_role.s3_logging_access_role.name
-  policy_arn = aws_iam_policy.s3_logging_policy.arn
+# Create an Instance Profile with SSM Permissions for Jump Server
+resource "aws_iam_role" "ssm_role" {
+  name = local.ssm_role_name
+  assume_role_policy = data.aws_iam_policy_document.ssm_policy.json
   
 }
 
+#Attach Policy to SSM Role
+resource "aws_iam_role_policy_attachment" "ssm_policy_attachment" {
+  for_each   = toset(var.ssm_policy_arns)
+  role       = aws_iam_role.ssm_role.name
+  policy_arn = each.value
+}
+
+# Create SSM Instance Profile
+resource "aws_iam_instance_profile" "e2_instance_profile" {
+  name = local.ssm_profile_name
+  role = aws_iam_role.ssm_role.name
+}
+
+
+#  Create ECS Task Role
+resource "aws_iam_role" "ecs_task_role" {
+  name = local.ecs_task_role_name
+  assume_role_policy = file("${path.root}/policies/ecs-assume-role-policy.json")
+}
+
+# Attach Permission Policies to ECS Task Role
+resource "aws_iam_role_policy_attachment" "ecs_task_policy_attachment" {
+  for_each   = toset(var.ecs_task_policy_arns)
+  role       = aws_iam_role.ecs_task_role.name
+  policy_arn = each.value
+
+}
 
 # Create ECS Execution Role
 resource "aws_iam_role" "ecs_execution_role" {
-  name               = "${local.name_prefix}-ecs-execution-role"
+  name = local.ecs_execution_role_name
+  assume_role_policy = file("${path.root}/policies/ecs-assume-role-policy.json")
   
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "ecs-tasks.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
 }
 
+# Attach Permission Policies to ECS Execution Role
 resource "aws_iam_role_policy_attachment" "ecs_execution_policy_attachment" {
+  for_each   = toset(var.ecs_execution_policy_arns)
   role       = aws_iam_role.ecs_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  
-}
-
-# Create ECS Task Role
-resource "aws_iam_role" "ecs_task_role" {
-  name               = "${local.name_prefix}-ecs-task-role"
-  
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17",
-    Statement = [{
-      Effect = "Allow",
-      Principal = {
-        Service = "ecs-tasks.amazonaws.com"
-      },
-      Action = "sts:AssumeRole"
-    }]
-  })
-}
-
-resource "aws_iam_role_policy_attachment" "ecs_task_attachment" {
-  role       = aws_iam_role.ecs_task_role.name
-  policy_arn = aws_iam_policy.s3_logging_policy.arn
-  
+  policy_arn = each.value
 }
 
 # Create ECS Task Execution Role
 resource "aws_iam_role" "ecs_task_execution_role" {
-    name               = "${local.name_prefix}-ecs-task-execution-role"
-
-    assume_role_policy = jsonencode({
-      Version = "2012-10-17",
-      Statement = [{
-        Effect = "Allow",
-        Principal = {
-          Service = "ecs-tasks.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      }]
-    })
+  name = local.ecs_execution_role_name
+  assume_role_policy = file("${path.root}/policies/ecs-assume-role-policy.json")
 }
 
+# Attach Permission Policies to ECS Task Execution Role
 resource "aws_iam_role_policy_attachment" "ecs_task_execution_policy_attachment" {
+  for_each   = toset(var.ecs_task_policy_arns)
   role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
-  
+  policy_arn = each.value
 }
 
-# Create an Instance Profile with SSM Permissions for Jump Server
-resource "aws_iam_role" "ssm_instance_role" {
-    name               = "${local.name_prefix}-jumpserver-ssm-instance-role"
-
-    assume_role_policy = jsonencode({
-      Version = "2012-10-17",
-      Statement = [{
-        Effect = "Allow",
-        Principal = {
-          Service = "ec2.amazonaws.com"
-        },
-        Action = "sts:AssumeRole"
-      }]
-    })
-
-}
-
-resource "aws_iam_role_policy_attachment" "ssm_core_policy" {
-  role       = aws_iam_role.ssm_instance_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
+# IAM ROLE TO ALLOW S3 PUT AND GET ACCESS TO S3 FOR LOGGING
+resource "aws_iam_role" "s3_role" {
+  name = local.s3_role_name
+  assume_role_policy = file("${path.root}/policies/s3-assume-role-policy.json")
 
   
 }
 
-resource "aws_iam_instance_profile" "ssm_instance_profile" {
-  name = "${local.name_prefix}-jumpsever-ssm-instance-profile"
-  role = aws_iam_role.ssm_instance_role.name
-  
+# Attach Permission Policies to S3 Role
+resource "aws_iam_role_policy_attachment" "s3_policy_attachment" {
+  for_each   = toset(var.s3_policy_arns)
+  role       = aws_iam_role.s3_role.name
+  policy_arn = each.value
 }
-
