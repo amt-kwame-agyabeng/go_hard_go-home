@@ -61,13 +61,6 @@ resource "aws_ssm_parameter" "app_private_rt" {
   value = join(",", aws_route_table.app_private_rt[*].id)
 }
 
-# #db rtb id
-# resource "aws_ssm_parameter" "db_private_rt" {
-#   name  = "/${var.environment}/db_private_rt"
-#   type  = "String"
-#   value = join(",", aws_route_table.db_private_rt[*].id)
-# }
-
 # web rtb association id
 resource "aws_ssm_parameter" "web_public_rt_association" {
   name  = "/${var.environment}/web_public_rt_association"

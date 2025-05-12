@@ -17,10 +17,6 @@ variable "region" {
   
 }
 
-#---------------------------
-# Networking variables
-#---------------------------
-
 variable "vpc" {
     description = "The name of the VPC "
     type        = string

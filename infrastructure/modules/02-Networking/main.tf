@@ -142,22 +142,7 @@ resource "aws_route_table" "app_private_rt" {
   )
 }
 
-# # Create a route table for the database (private) subnets
-# resource "aws_route_table" "db_private_rt" {
-#   count = length(local.avaliability_zones)
-#   vpc_id = aws_vpc.vpc.id
 
-#   route  {
-#     cidr_block = "0.0.0.0/0"
-#     gateway_id = aws_nat_gateway.nat_gw[count.index].id
-# }
-  
-
-#   tags = {
-#     Name = "${local.name_prefix}-db-private-rt-${local.avaliability_zones[count.index]}"
-#   }
-  
-# }
 
 # Associate the public subnets with the public route table
 resource "aws_route_table_association" "web_public_rt_association" {

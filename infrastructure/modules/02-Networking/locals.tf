@@ -3,6 +3,8 @@ locals {
   name_prefix = "${var.owner}-${var.environment}-${var.region}"
 }
 
+
+# # Create a local variable for common tags
 locals {
   common_tags = {
     Owner = var.owner
@@ -11,7 +13,7 @@ locals {
   }
 }
 
-
+ # Create a local variable for resources name
 locals {
   vpc_name = "${local.name_prefix}-${var.vpc}"
   igw_name = "${local.name_prefix}-${var.igw_name}"
