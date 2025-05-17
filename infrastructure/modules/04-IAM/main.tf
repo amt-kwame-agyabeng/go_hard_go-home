@@ -49,7 +49,7 @@ resource "aws_iam_role_policy_attachment" "ecs_execution_policy_attachment" {
 
 # Create ECS Task Execution Role
 resource "aws_iam_role" "ecs_task_execution_role" {
-  name = local.ecs_execution_role_name
+  name = local.ecs_task_execution_role_name
   assume_role_policy = file("${path.root}/policies/ecs-assume-role-policy.json")
 }
 
