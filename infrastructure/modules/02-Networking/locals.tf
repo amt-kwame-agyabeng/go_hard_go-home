@@ -4,7 +4,7 @@ locals {
 }
 
 
-# # Create a local variable for common tags
+# Create a local variable for common tags
 locals {
   common_tags = {
     Owner = var.owner

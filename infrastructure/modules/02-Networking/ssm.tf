@@ -19,6 +19,13 @@ resource "aws_ssm_parameter" "web_subnet_ids" {
   value = join(",", aws_subnet.web_public_subnet[*].id)
 }
 
+#store first web subnet id for jumpBox
+resource "aws_ssm_parameter" "jumpbox_subnet" {
+  name  = "/${var.environment}/jumpbox_subnet"
+  type  = "String"
+  value = aws_subnet.web_public_subnet[0].id
+}
+
 # store app subnet ids
 resource "aws_ssm_parameter" "app_subnet_ids" {
   name  = "/${var.environment}/app_subnet_ids"
