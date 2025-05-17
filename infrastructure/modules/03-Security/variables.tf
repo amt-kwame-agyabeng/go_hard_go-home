@@ -81,4 +81,3 @@ variable "mysql_port" {
     type = number
   
 }
-

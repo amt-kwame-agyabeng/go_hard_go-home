@@ -1,4 +1,39 @@
 # Create WAF to block top 10 OWASP attacks
+resource "aws_wafv2_web_acl" "waf" {
+  name               = local.waf_acl_name
+  scope              = "REGIONAL"
+  default_action {
+    allow {}
+  }
+
+  visibility_config {
+    cloudwatch_metrics_enabled = true
+    sampled_requests_enabled   = true
+    metric_name = local.waf_metric_name
+  }
+
+  rule {
+    name     = "AWS-AWSManagedRulesCommonRuleSet"
+    priority = 1
+
+    override_action {
+      none {}
+    }
+    statement {
+      managed_rule_group_statement {
+        name        = "AWSManagedRulesCommonRuleSet"
+        vendor_name = "AWS"
+      }
+    }
+
+    visibility_config {
+      cloudwatch_metrics_enabled = true
+      metric_name = "CommonRules"
+      sampled_requests_enabled = true
+    }
+  }
+  tags = local.common_tags
+}
 
 
 # Create security group for Jump Server 
