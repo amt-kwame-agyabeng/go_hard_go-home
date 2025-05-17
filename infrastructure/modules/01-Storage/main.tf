@@ -1,6 +1,11 @@
 # S3 bucket module
 resource "aws_s3_bucket" "logging_bucket" {
-    bucket = var.bucket_name  
+    bucket = "${local.bucket_name}-${random_id.suffix.hex}" 
+}
+
+# Random id generator
+resource "random_id" "suffix" {
+  byte_length = 4
 }
 
 # Enable bucket versioning on log bucket
