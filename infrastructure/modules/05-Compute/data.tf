@@ -76,9 +76,3 @@ data "aws_ssm_parameter" "waf_acl_arn" {
     name  = "/${var.environment}/waf-acl/arn"
 }
 
-# # Get ACM Certificate
-# data "aws_acm_certificate" "acm_cert" {
-#   domain   = var.wildcard_domain_name
-#   statuses = ["ISSUED"]
-#   types    = ["AMAZON_ISSUED"]
-# }

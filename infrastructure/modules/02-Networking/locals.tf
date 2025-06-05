@@ -27,5 +27,5 @@ locals {
 }
 
 locals {
-  avaliability_zones = ["us-east-1a", "us-east-1b"]
+  avaliability_zones = ["us-east-2a", "us-east-2b"]
 }

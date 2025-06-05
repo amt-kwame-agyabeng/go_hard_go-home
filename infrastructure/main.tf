@@ -1,4 +1,4 @@
-module "logging_bucket" {
+module "storage" {
   source      = "./modules/01-Storage"
   bucket_name = var.bucket_name
   owner = var.owner
@@ -36,7 +36,7 @@ module "networking" {
   app_subnet_name  = var.app_subnet_name
   db_subnet_name   = var.db_subnet_name
 
-  depends_on = [module.iam, module.s3_storage]
+  depends_on = [module.iam, module.storage]
 
 
 }
@@ -57,9 +57,23 @@ module "security" {
   https_port          = var.https_port
   mysql_port          = var.mysql_port
   waf_acl_name        = var.waf_acl_name
+  
 
   depends_on = [module.networking, module.iam]
 
 
+}
+
+module "compute" {
+  source              = "./modules/05-Compute"
+  owner               = var.owner
+  environment         = var.environment
+  region              = var.region
+  instance_type = var.instance_type
+  container_port = var.container_port
+  alb_https_listener_port = var.alb_https_listener_port
+
+  depends_on = [module.security, module.networking, module.storage, module.iam] 
+  
 }
 

@@ -43,7 +43,7 @@ variable "vpc_cidr" {
   type        = string
 
 }
-  
+
 
 
 variable "igw_name" {
@@ -150,4 +150,64 @@ variable "mysql_port" {
 
 }
 
+#-------------------------
+# Variables for IAM
+#-------------------------
 
+
+variable "ssm_policy_arns" {
+  description = "The ARNs of the policies to attach to the SSM role"
+  type        = list(string)
+
+
+}
+variable "ecs_task_policy_arns" {
+  description = "The ARNs of the policies to attach to the ECS task role"
+  type        = list(string)
+
+}
+
+variable "ecs_execution_policy_arns" {
+  description = "The ARNs of the policies to attach to the ECS execution role"
+  type        = list(string)
+
+}
+
+# variable "ecs_task_execution_policy_arns" {
+#     description = "The ARNs of the policies to attach to the ECS task execution role"
+#     type        = list(string)
+
+# }
+variable "s3_policy_arns" {
+  description = "The ARNs of the policies to attach to the S3 role"
+  type        = list(string)
+
+}
+
+
+#-------------------------
+# Variables for Compute
+#-------------------------
+
+variable "instance_type" {
+  description = "The instance type"
+  type        = string
+}
+
+variable "container_port" {
+  description = "The container port"
+  type        = number
+  
+}
+
+variable "alb_https_listener_port" {
+  description = "The ALB HTTPS listener port"
+  type        = number
+  
+}
+
+# # Variable for wildcard Domain Name
+# variable "wildcard_domain_name" {
+#   description = "Wildcard domain name for ALB"
+#   type        = string
+# }

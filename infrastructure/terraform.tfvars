@@ -4,7 +4,7 @@
 #-----------------------
 owner       = "devkwame"
 environment = "dev"
-region      = "us-east-1"
+region      = "us-east-2"
 
 #----------------------
 # Storage variables
@@ -39,3 +39,40 @@ http_port           = 80
 https_port          = 443
 ssh_port            = 22
 mysql_port          = 3306
+
+
+#------------------------
+# IAM variables
+#------------------------
+
+# SSM Policy ARNS
+ssm_policy_arns = [
+  "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+  "arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM"
+]
+
+# ECS Task Policy ARNS
+ecs_task_policy_arns = [
+  "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
+]
+
+# ECS Execution Policy ARNS
+ecs_execution_policy_arns = [
+  "arn:aws:iam::aws:policy/AmazonECS_FullAccess"
+]
+
+
+
+# S3 Managed Policy ARNs
+s3_policy_arns = [
+  "arn:aws:iam::aws:policy/AmazonS3FullAccess"
+]
+
+#------------------------
+# Compute variables
+#------------------------
+
+instance_type = "t2.micro"
+container_port = 3000
+alb_https_listener_port = 443
+# wildcard_domain_name = "dev-wildcard-domain-name.com"

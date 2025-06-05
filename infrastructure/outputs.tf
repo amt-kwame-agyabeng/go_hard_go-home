@@ -1,5 +1,5 @@
 output "bucket_name" {
-  value = module.s3_storage.bucket_name
+  value = module.storage.bucket_name
 }
 
 output "vpc_id" {

@@ -4,5 +4,6 @@ terraform.tfstate.backup
 .terraform/
 plan_output
 
-
+# Docker files
+Dockerfile
 

@@ -270,7 +270,7 @@ resource "aws_ecs_service" "service" {
   network_configuration {
     security_groups   = [data.aws_ssm_parameter.sg_ecs_id.value]
     subnets           = split(",", data.aws_ssm_parameter.web_subnet_ids.value)
-    assign_public_ip  = false
+    assign_public_ip  = true
   }
 
   deployment_controller {
@@ -280,7 +280,7 @@ resource "aws_ecs_service" "service" {
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
     container_name   = "app-container"
-    container_port   = 8080
+    container_port   =  var.container_port
   }
 
   service_registries {
